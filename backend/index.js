@@ -1,7 +1,11 @@
 //подключаем библиотеку Express для создания сервера
 const express = require('express');
+
 //подключаем CORS чтобы фронтенд мог общаться с бэкендом
 const cors = require('cors');
+
+//подключаем базу данных
+const pool = require('./db');
 
 //сервер
 const app = express();
@@ -20,6 +24,19 @@ app.get('/', (req, res) => {
     project: 'TravelLog - журнал путешествий',
     version: '0.1.0'
   });
+});
+
+//добавляем новый маршрут для проверки БД
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW() as current_time');
+    res.json({ 
+      message: 'База данных подключена успешно!',
+      currentTime: result.rows[0].current_time
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Ошибка подключения к БД' });
+  }
 });
 
 //запускаем сервер

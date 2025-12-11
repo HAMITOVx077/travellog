@@ -1,0 +1,1 @@
+const JournalPage = () => { return <div><h2>Мой личный журнал</h2></div>; }; export default JournalPage;

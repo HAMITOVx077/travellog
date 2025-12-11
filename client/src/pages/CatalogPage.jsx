@@ -1,0 +1,1 @@
+const CatalogPage = () => { return <div><h2>Каталог мест</h2></div>; }; export default CatalogPage;

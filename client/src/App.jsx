@@ -1,75 +1,89 @@
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { useEffect, useContext, createContext } from 'react';
 
-//импорт хранилища и страниц
 import AuthStore from './stores/AuthStore';
+import PlaceStore from './stores/PlaceStore';
+import JournalStore from './stores/JournalStore'; 
+
 import LoginPage from './pages/LoginPage';
 import RegistrationPage from './pages/RegistrationPage';
 import JournalPage from './pages/JournalPage';
 import CatalogPage from './pages/CatalogPage';
+import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage'; //импортируем админку
+import NavBar from './components/NavBar';
 
-
-//контекст для доступа к хранилищу
-export const StoreContext = createContext(AuthStore);
+export const StoreContext = createContext({
+    authStore: AuthStore,
+    placeStore: PlaceStore,
+    journalStore: JournalStore,
+});
 
 const App = observer(() => {
-    const store = useContext(StoreContext);
+    const { authStore, journalStore } = useContext(StoreContext); 
 
     useEffect(() => {
-        store.checkAuth();
-    }, [store]);
+        if (localStorage.getItem('token')) {
+            authStore.checkAuth().then(() => {
+                if (authStore.isAuth) {
+                    journalStore.fetchJournal();
+                    
+                }
+            });
+        } else {
+            authStore.setLoading(false); 
+        }
+    }, [authStore, journalStore]);
 
-    if (store.isLoading) {
-        return <div style={{padding: '20px', fontSize: '24px'}}>Загрузка...</div>;
+    if (authStore.isLoading) {
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '24px' }}>
+                Загрузка приложения...
+            </div>
+        );
     }
 
     return (
         <BrowserRouter>
-            <div className="App">
-                <header>
-                    <nav style={{ padding: '10px', backgroundColor: '#eee', display: 'flex', gap: '20px', alignItems: 'center' }}>
-                        <Link to="/">Каталог</Link>
-                        {store.isAuth && <Link to="/journal">Мой Журнал</Link>}
-                        
-                        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            {store.isAuth 
-                                ? (
-                                    <>
-                                        <span>Привет, {store.user.username || store.user.email}! (Роль: {store.user.role})</span>
-                                        <button onClick={() => store.logout()}>Выйти</button>
-                                    </>
-                                )
-                                : (
-                                    <>
-                                        <Link to="/login">Вход</Link>
-                                        <Link to="/registration">Регистрация</Link>
-                                    </>
-                                )
-                            }
-                        </div>
-                    </nav>
-                </header>
+            <div className="App" style={{ fontFamily: 'sans-serif', backgroundColor: '#f4f7f6', minHeight: '100vh' }}>
+                <NavBar />
 
-                <main style={{ padding: '20px' }}>
+                <main style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
                     <Routes>
                         <Route path="/" element={<CatalogPage />} /> 
-
-                        {/* Защищенные маршруты (Journal доступен только авторизованным) */}
-                        {store.isAuth && <Route path="/journal" element={<JournalPage />} />}
-
-                        {/* Маршруты для неавторизованных (Login/Registration) */}
-                        {!store.isAuth && <Route path="/login" element={<LoginPage />} />}
-                        {!store.isAuth && <Route path="/registration" element={<RegistrationPage />} />}
-
-                        {/* Редиректы для удобства пользователя */}
-                        {/* Неавторизованный -> пытается попасть в журнал -> на страницу входа */}
-                        {!store.isAuth && <Route path="/journal" element={<Navigate to="/login" replace />} />}
-                        {/* Авторизованный -> пытается попасть на вход/регистрацию -> на главную */}
-                        {store.isAuth && <Route path="/login" element={<Navigate to="/" replace />} />}
-                        {store.isAuth && <Route path="/registration" element={<Navigate to="/" replace />} />}
                         
-                        <Route path="*" element={<h1>404: Страница не найдена</h1>} />
+                        {/* Приватные маршруты */}
+                        <Route 
+                            path="/journal" 
+                            element={authStore.isAuth ? <JournalPage /> : <Navigate to="/login" replace />} 
+                        />
+                        <Route 
+                            path="/profile" 
+                            element={authStore.isAuth ? <ProfilePage /> : <Navigate to="/login" replace />} 
+                        />
+
+                        {/* Роут для АДМИНА */}
+                        <Route 
+                            path="/admin" 
+                            element={
+                                authStore.isAuth && authStore.user.role === 'admin' 
+                                ? <AdminPage /> 
+                                : <Navigate to="/" replace />
+                            } 
+                        />
+
+                        {/* Авторизация */}
+                        <Route 
+                            path="/login" 
+                            element={!authStore.isAuth ? <LoginPage /> : <Navigate to="/" replace />} 
+                        />
+                        <Route 
+                            path="/registration" 
+                            element={!authStore.isAuth ? <RegistrationPage /> : <Navigate to="/" replace />} 
+                        />
+
+                        <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '50px' }}><h1>404</h1><p>Страница не найдена</p></div>} />
                     </Routes>
                 </main>
             </div>

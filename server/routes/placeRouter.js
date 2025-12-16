@@ -1,29 +1,24 @@
 const Router = require('express');
 const router = new Router();
 const placeController = require('../controllers/placeController');
-const authMiddleware = require('../middleware/authMiddleware');
-const roleMiddleware = require('../middleware/roleMiddleware');
+const multer = require('multer');
+const path = require('path');
 
-//Маршруты для каталога (Place)
+//настройка хранилища
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'static/'); //папка должна существовать!
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
 
-//POST /api/places - Создать новое место (ТОЛЬКО АДМИН)
-//Сначала проверяем токен, затем проверяем роль
-router.post('/', authMiddleware, roleMiddleware('admin'), placeController.createPlace);
+const upload = multer({ storage: storage });
 
-//GET /api/places - Получить весь каталог мест (ДЛЯ ВСЕХ)
-router.get('/', placeController.getAllPlaces);
-
-
-//Маршруты для личного журнала (UserPlace)
-
-//POST /api/places/journal - Добавить место в личный журнал (ТРЕБУЕТСЯ АВТОРИЗАЦИЯ)
-router.post('/journal', authMiddleware, placeController.addUserPlace);
-
-//PUT /api/places/journal - Обновить статус места (посетил, отзыв) (ТРЕБУЕТСЯ АВТОРИЗАЦИЯ)
-router.put('/journal', authMiddleware, placeController.updateStatus);
-
-//GET /api/places/journal - Получить личный журнал пользователя (ТРЕБУЕТСЯ АВТОРИЗАЦИЯ)
-router.get('/journal', authMiddleware, placeController.getUserJournal);
-
+//используем upload.single('image') для обработки файла
+router.post('/', upload.single('image'), placeController.createPlace);
+router.get('/', placeController.getAll);
 
 module.exports = router;

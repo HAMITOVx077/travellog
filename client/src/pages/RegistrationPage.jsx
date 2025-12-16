@@ -3,18 +3,21 @@ import { StoreContext } from '../App';
 import { observer } from 'mobx-react-lite';
 
 const RegistrationPage = observer(() => {
-    const store = useContext(StoreContext); 
+    //используем деструктуризацию для получения только authStore из контекста
+    const { authStore } = useContext(StoreContext); 
+    
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await store.registration(username, email, password);
+        //используем authStore для вызова метода registration
+        await authStore.registration(username, email, password);
     };
 
     return (
-        <div className="auth-container"> {/* Используем новый класс */}
+        <div className="auth-container">
             <h2 className='registration_travel_text'>Регистрация в TravelLog</h2>
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                 <input
@@ -40,7 +43,8 @@ const RegistrationPage = observer(() => {
                 />
                 <button 
                     type="submit" 
-                    disabled={store.isLoading}
+                    //используем authStore.isLoading, чтобы блокировать кнопку во время запроса
+                    disabled={authStore.isLoading}
                 >
                     Зарегистрироваться
                 </button>

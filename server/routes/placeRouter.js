@@ -4,21 +4,26 @@ const placeController = require('../controllers/placeController');
 const multer = require('multer');
 const path = require('path');
 
-//настройка хранилища
+const authMiddleware = require('../middleware/authMiddleware');
+const checkRole = require('../middleware/roleMiddleware'); 
+
+// настройка хранилища
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'static/'); //папка должна существовать!
+        cb(null, 'static/'); 
     },
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, uniqueSuffix + path.extname(file.originalname));
     }
 });
 
 const upload = multer({ storage: storage });
 
-//используем upload.single('image') для обработки файла
+//маршруты
 router.post('/', upload.single('image'), placeController.createPlace);
 router.get('/', placeController.getAll);
+
+router.delete('/:id', authMiddleware, checkRole('admin'), placeController.deletePlace);
 
 module.exports = router;

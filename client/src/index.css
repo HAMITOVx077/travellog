@@ -78,3 +78,33 @@ input {
   margin-bottom: 10px;
 }
 
+/* Добавь это в конец своего index.css */
+
+/* Контейнер для центровки контента на всех страницах */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Сетка для карточек (в каталоге и журнале) */
+.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+}
+
+/* Общий стиль для заголовков страниц */
+.page-title {
+    color: var(--color-primary);
+    margin-bottom: 25px;
+    font-size: 2rem;
+}
+
+/* Вспомогательный класс для гибких блоков */
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

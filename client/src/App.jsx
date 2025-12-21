@@ -11,8 +11,10 @@ import RegistrationPage from './pages/RegistrationPage';
 import JournalPage from './pages/JournalPage';
 import CatalogPage from './pages/CatalogPage';
 import ProfilePage from './pages/ProfilePage';
-import AdminPage from './pages/AdminPage'; //импортируем админку
+import AdminPage from './pages/AdminPage';
+import AboutPage from './pages/AboutPage'; 
 import NavBar from './components/NavBar';
+
 
 export const StoreContext = createContext({
     authStore: AuthStore,
@@ -28,7 +30,6 @@ const App = observer(() => {
             authStore.checkAuth().then(() => {
                 if (authStore.isAuth) {
                     journalStore.fetchJournal();
-                    
                 }
             });
         } else {
@@ -51,9 +52,13 @@ const App = observer(() => {
 
                 <main style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
                     <Routes>
+                        {/* Публичные маршруты (доступны всем) */}
                         <Route path="/" element={<CatalogPage />} /> 
                         
-                        {/* Приватные маршруты */}
+                        {/* 2. ДОБАВЛЯЕМ РОУТ для страницы "О проекте" */}
+                        <Route path="/about" element={<AboutPage />} />
+
+                        {/* Приватные маршруты (только для авторизованных) */}
                         <Route 
                             path="/journal" 
                             element={authStore.isAuth ? <JournalPage /> : <Navigate to="/login" replace />} 
@@ -83,6 +88,7 @@ const App = observer(() => {
                             element={!authStore.isAuth ? <RegistrationPage /> : <Navigate to="/" replace />} 
                         />
 
+                        {/* 404 ошибка */}
                         <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '50px' }}><h1>404</h1><p>Страница не найдена</p></div>} />
                     </Routes>
                 </main>

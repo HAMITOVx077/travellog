@@ -80,6 +80,21 @@ class PlaceController {
             return res.json({ message: 'Запись удалена' });
         } catch (e) { res.status(500).json({ message: e.message }); }
     }
+     async deletePlace(req, res) {
+    try {
+        const { id } = req.params; // Берем id из URL
+        const place = await Place.findByPk(id);
+
+        if (!place) {
+            return res.status(404).json({ message: "Место не найдено в БД" });
+        }
+
+        await place.destroy();
+        return res.json({ message: "Успешно удалено" });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+}
 }
 
 module.exports = new PlaceController();

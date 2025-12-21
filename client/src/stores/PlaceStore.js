@@ -36,19 +36,32 @@ class PlaceStore {
             this.setLoading(false);
         }
     }
-    //внутри PlaceStore.js
-async createPlace(formData) {
+        //внутри PlaceStore.js
+    async createPlace(formData) {
+        try {
+            //formData — это уже объект FormData из компонента
+            const response = await $api.post('/places', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            this.places.push(response.data);
+            return true;
+        } catch (e) {
+            console.error("Ошибка при создании места:", e);
+            return false;
+        }
+    }
+    // Внутри класса PlaceStore в файле PlaceStore.js
+async deletePlace(id) {
     try {
-        //formData — это уже объект FormData из компонента
-        const response = await $api.post('/places', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        this.places.push(response.data);
+        await $api.delete(`/places/${id}`);
+        // Фильтруем массив, удаляя удаленный объект
+        this.places = this.places.filter(p => p.id !== id);
         return true;
     } catch (e) {
-        console.error("Ошибка при создании места:", e);
+        console.error("Ошибка при удалении места:", e);
+        alert(e.response?.data?.message || "Ошибка при удалении");
         return false;
     }
 }

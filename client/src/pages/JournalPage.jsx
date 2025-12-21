@@ -5,8 +5,6 @@ import JournalPlaceCard from '../components/JournalPlaceCard';
 
 const JournalPage = observer(() => {
     const { journalStore } = useContext(StoreContext);
-    
-    //состояние для текущего фильтра: 'all', 'want_to_visit', 'visited'
     const [filter, setFilter] = useState('all');
 
     useEffect(() => {
@@ -14,62 +12,87 @@ const JournalPage = observer(() => {
     }, [journalStore]);
 
     if (journalStore.isLoading) {
-        return <div style={{ textAlign: 'center', marginTop: '50px' }}>Загрузка вашего журнала...</div>;
+        return (
+            <div style={{ textAlign: 'center', marginTop: '100px', color: '#1C454B', fontWeight: 'bold' }}>
+                Загрузка вашего журнала...
+            </div>
+        );
     }
 
-    //ЛОГИКА ФИЛЬТРАЦИИ
     const filteredPlaces = journalStore.journalPlaces.filter(entry => {
         if (filter === 'all') return true;
         return entry.status === filter;
     });
 
-    //стили для кнопок-табов
+    // Обновленный стиль табов
     const getTabStyle = (tabName) => ({
-        padding: '10px 20px',
+        padding: '12px 24px',
         cursor: 'pointer',
         border: 'none',
-        borderRadius: '20px',
-        backgroundColor: filter === tabName ? '#1C454B' : '#e0e0e0',
-        color: filter === tabName ? 'white' : '#333',
-        fontWeight: 'bold',
-        transition: '0.3s'
+        borderRadius: '10px',
+        backgroundColor: filter === tabName ? '#1C454B' : 'transparent',
+        color: filter === tabName ? 'white' : '#666',
+        fontWeight: '700',
+        fontSize: '14px',
+        transition: '0.2s ease',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
     });
 
     return (
-        <div>
-            <h1 style={{ marginBottom: '20px' }}>Мой Журнал Путешествий</h1>
+        <div style={{ paddingBottom: '50px' }}>
+            <h1 style={{ color: '#1C454B', marginBottom: '30px' }}>Мой журнал путешествий</h1>
 
             {/* ПАНЕЛЬ ТАБОВ */}
             <div style={{ 
-                display: 'flex', 
-                gap: '10px', 
-                marginBottom: '30px', 
-                backgroundColor: '#f5f5f5', 
-                padding: '10px', 
-                borderRadius: '30px',
-                width: 'fit-content'
+                display: 'inline-flex', 
+                gap: '5px', 
+                marginBottom: '40px', 
+                backgroundColor: 'white', 
+                padding: '6px', 
+                borderRadius: '14px',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                border: '1px solid #eee'
             }}>
                 <button onClick={() => setFilter('all')} style={getTabStyle('all')}>
-                    Все ({journalStore.journalPlaces.length})
+                    Все 
+                    <span style={{ opacity: 0.6, fontSize: '12px' }}>{journalStore.journalPlaces.length}</span>
                 </button>
                 <button onClick={() => setFilter('want_to_visit')} style={getTabStyle('want_to_visit')}>
-                    Хочу посетить ({journalStore.journalPlaces.filter(p => p.status === 'want_to_visit').length})
+                    В планах
+                    <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                        {journalStore.journalPlaces.filter(p => p.status === 'want_to_visit').length}
+                    </span>
                 </button>
                 <button onClick={() => setFilter('visited')} style={getTabStyle('visited')}>
-                    Посещено ({journalStore.journalPlaces.filter(p => p.status === 'visited').length})
+                    Посещено
+                    <span style={{ opacity: 0.6, fontSize: '12px' }}>
+                        {journalStore.journalPlaces.filter(p => p.status === 'visited').length}
+                    </span>
                 </button>
             </div>
 
             {/* СПИСОК КАРТОЧЕК */}
             {filteredPlaces.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '50px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-                    <p style={{ color: '#666' }}>В этой категории пока нет мест.</p>
+                <div style={{ 
+                    textAlign: 'center', 
+                    padding: '80px 20px', 
+                    backgroundColor: 'white', 
+                    borderRadius: '20px',
+                    border: '1px dashed #ccc'
+                }}>
+                    <p style={{ color: '#999', fontSize: '16px', margin: 0 }}>
+                        {filter === 'all' 
+                            ? 'Ваш журнал пока пуст. Добавьте места из каталога!' 
+                            : 'В этой категории пока нет записей.'}
+                    </p>
                 </div>
             ) : (
                 <div style={{ 
                     display: 'grid', 
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', 
-                    gap: '20px' 
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+                    gap: '30px' 
                 }}>
                     {filteredPlaces.map(entry => (
                         <JournalPlaceCard 

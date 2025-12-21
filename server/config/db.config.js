@@ -1,7 +1,6 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config(); 
 
-//создаем экземпляр Sequelize
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
@@ -14,18 +13,15 @@ const sequelize = new Sequelize(
     }
 );
 
-//функция для тестирования подключения и синхронизации
 const connectDB = async () => {
     try {
         await sequelize.authenticate();
         console.log('УСПЕХ: Соединение с PostgreSQL установлено.');
         
-        //импортируем все модели (это также инициализирует связи в index.js)
         const db = require('../models'); 
         
-        //синхронизация моделей с базой данных (создание таблиц, если их нет)
-        await sequelize.sync({ force: false }); 
-        console.log('УСПЕХ: Все модели синхронизированы.');
+        await sequelize.sync({ alter: true }); 
+        console.log('УСПЕХ: Все модели синхронизированы (база обновлена).');
 
     } catch (error) {
         console.error('ОШИБКА: Не удалось подключиться или синхронизировать БД:', error.message);

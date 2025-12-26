@@ -26,7 +26,6 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING(255),
             allowNull: true, //NULL, если аватарка не загружена
         },
-        //role_id будет определен автоматически через связи в index.js
     }, {
         tableName: 'users',
         timestamps: true, //включаем created_at и updated_at

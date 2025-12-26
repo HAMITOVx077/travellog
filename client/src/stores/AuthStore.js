@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 class AuthStore {
     isAuth = false;
     user = {};
-    isLoading = true; //начальное состояние - загрузка
+    isLoading = true;
 
     constructor() {
         makeAutoObservable(this);
@@ -23,12 +23,11 @@ class AuthStore {
         this.isLoading = bool;
     }
 
-    //МЕТОДЫ HTTP-ЗАПРОСОВ
-
+    //методы HTTP-запросов
+    
+    //вход в систему: отправляем данные - получаем токен - сохраняем его
     async login(email, password) {
         try {
-            //в логине и регистрации не устанавливаем главный isLoading,
-            //чтобы не блокировать весь App.jsx, а только кнопку формы.
             const response = await $api.post('/auth/login', { email, password });
             
             localStorage.setItem('token', response.data.token);
@@ -44,6 +43,7 @@ class AuthStore {
         }
     }
 
+    //регистрация создает нового пользователя
     async registration(username, email, password) {
         try {
             const response = await $api.post('/auth/registration', { username, email, password });
@@ -61,13 +61,14 @@ class AuthStore {
         }
     }
 
+    //выход, удаляем токен
     async logout() {
         localStorage.removeItem('token');
         this.setAuth(false);
         this.setUser({});
     }
     
-    //ПРОВЕРКА ТОКЕНА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ 
+    //проверка токена при загрузке страницы
     async checkAuth() {
         this.setLoading(true); //загрузка начинается
 
@@ -102,10 +103,11 @@ class AuthStore {
             this.setAuth(false); 
             this.setUser({});
         } finally {
-            //ГАРАНТИЯ: isLoading всегда сбросится, независимо от результата
             this.setLoading(false); 
         }
     }
+
+    //обновление информации в профиле
     async updateProfile(userData, avatarFile) {
     try {
         const formData = new FormData();
@@ -125,11 +127,11 @@ class AuthStore {
             this.setUser(decodedUser);
             return true;
         }
-    } catch (e) {
-        alert(e.response?.data?.message || 'Ошибка обновления');
-        return false;
+        } catch (e) {
+            alert(e.response?.data?.message || 'Ошибка обновления');
+            return false;
+        }
     }
-}
 }
 
 export default new AuthStore();

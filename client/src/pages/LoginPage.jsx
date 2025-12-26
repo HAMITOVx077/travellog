@@ -10,7 +10,7 @@ const LoginPage = observer(() => {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({});
 
-    // Валидация доменов
+    //валидация доменов
     const validate = () => {
         const newErrors = {};
         const allowedDomains = ['@gmail.com', '@mail.ru', '@yandex.ru', '@bk.ru', '@list.ru'];
@@ -28,7 +28,7 @@ const LoginPage = observer(() => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({}); // Сразу очищаем старые ошибки
+        setErrors({}); //сразу очищаем старые ошибки
         
         if (!validate()) return;
 
@@ -38,12 +38,11 @@ const LoginPage = observer(() => {
                 setErrors({ auth: 'Неверный логин или пароль' });
             }
         } catch (err) {
-            // Здесь мы игнорируем err.message от сервера и ставим свой текст
             setErrors({ auth: 'Неверный логин или пароль' });
         }
     };
 
-    // Функция для очистки ошибки при вводе (чтобы красный текст пропадал сразу)
+    //функция для очистки ошибки при вводе (чтобы красный текст пропадал сразу)
     const handleInputChange = (field, value) => {
         if (field === 'email') setEmail(value);
         if (field === 'password') setPassword(value);

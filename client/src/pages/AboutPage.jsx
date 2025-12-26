@@ -26,7 +26,7 @@ const AboutPage = () => {
                         <strong style={{ color: '#1C454B' }}>Группа:</strong> 4пк2
                     </p>
                     <p style={{ margin: 0 }}>
-                        <strong style={{ color: '#1C454B' }}>Стек:</strong> React (Vite), MobX, Node.js (Express), PostgreSQL (Sequelize)
+                        <strong style={{ color: '#1C454B' }}>Стек:</strong> PostgreSQL, Express.js, React, Node.js
                     </p>
                     
                     <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '10px 0' }} />

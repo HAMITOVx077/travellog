@@ -1,6 +1,8 @@
 const { Place, UserPlace } = require('../models');
 
 class PlaceController {
+    
+    //создание нового места в общем каталоге, доступно админу
     async createPlace(req, res, next) {
         try {
             const { name, description, country, city } = req.body;
@@ -26,6 +28,7 @@ class PlaceController {
         }
     }
 
+    //получение списка всех мест из общего каталога для отображения на главной странице
     async getAll(req, res, next) {
         try {
             const places = await Place.findAll({ order: [['name', 'ASC']] });
@@ -33,13 +36,16 @@ class PlaceController {
         } catch (e) { next(e); }
     }
 
+    //добавление выбранного места в личный журнал пользователя (статус по умолчанию: хочу посетить)
     async addUserPlace(req, res) {
         const { placeId } = req.body;
         const userId = req.user.id;
         try {
             let userPlace = await UserPlace.findOne({ where: { user_id: userId, place_id: placeId } });
             if (userPlace) return res.status(400).json({ message: 'Уже в журнале' });
+            
             userPlace = await UserPlace.create({ user_id: userId, place_id: placeId, status: 'want_to_visit' });
+            
             const result = await UserPlace.findOne({
                 where: { id: userPlace.id },
                 include: [{ model: Place, attributes: ['name', 'country', 'city', 'image_url', 'id'] }]
@@ -48,13 +54,16 @@ class PlaceController {
         } catch (e) { res.status(500).json({ message: e.message }); }
     }
 
+    //обновление личных данных места в журнале (изменение статуса, добавление отзыва, рейтинга и даты)
     async updateStatus(req, res) {
         const { id } = req.params;
         const { status, user_review, rating, visited_date } = req.body;
         try {
             let userPlace = await UserPlace.findOne({ where: { id: id, user_id: req.user.id } });
             if (!userPlace) return res.status(404).json({ message: 'Запись не найдена' });
+            
             await userPlace.update({ status, user_review, rating, visited_date });
+            
             const result = await UserPlace.findOne({
                 where: { id: userPlace.id },
                 include: [{ model: Place, attributes: ['name', 'country', 'city', 'image_url', 'id'] }]
@@ -63,6 +72,7 @@ class PlaceController {
         } catch (e) { res.status(500).json({ message: e.message }); }
     }
 
+    //получение всех записей из личного журнала текущего авторизованного пользователя
     async getUserJournal(req, res) {
         try {
             const journal = await UserPlace.findAll({
@@ -74,28 +84,33 @@ class PlaceController {
         } catch (e) { res.status(500).json({ message: e.message }); }
     }
 
+    //удаление конкретной записи из личного журнала пользователя
     async removeUserPlace(req, res) {
         try {
             await UserPlace.destroy({ where: { id: req.params.id, user_id: req.user.id } });
             return res.json({ message: 'Запись удалена' });
         } catch (e) { res.status(500).json({ message: e.message }); }
     }
-     async deletePlace(req, res) {
-    try {
-        const { id } = req.params; // Берем id из URL
-        const place = await Place.findByPk(id);
 
-        if (!place) {
-            return res.status(404).json({ message: "Место не найдено в БД" });
+    //полное удаление места из общей базы данных, доступно только админу
+    async deletePlace(req, res) {
+        try {
+            const { id } = req.params; // Берем id из URL
+            const place = await Place.findByPk(id);
+
+            if (!place) {
+                return res.status(404).json({ message: "Место не найдено в БД" });
+            }
+
+            await place.destroy();
+            return res.json({ message: "Успешно удалено" });
+        } catch (e) {
+            res.status(500).json({ message: e.message });
         }
-
-        await place.destroy();
-        return res.json({ message: "Успешно удалено" });
-    } catch (e) {
-        res.status(500).json({ message: e.message });
     }
-}
-async updatePlace(req, res, next) {
+
+    //редактирование информации о месте в общем каталоге (замена текста или фотографии)
+    async updatePlace(req, res, next) {
         try {
             const { id } = req.params;
             const { name, description, country, city } = req.body;
@@ -105,7 +120,7 @@ async updatePlace(req, res, next) {
                 return res.status(404).json({ message: 'Место не найдено' });
             }
 
-            // Если загружено новое фото, берем его, иначе оставляем старое
+            //если загружено новое фото, берем его, иначе оставляем старое
             const fileName = req.file ? req.file.filename : place.image_url;
 
             await place.update({

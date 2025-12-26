@@ -12,7 +12,7 @@ const NavBar = observer(() => {
         navigate('/login');
     };
 
-    // Простой стиль ссылок с подчеркиванием
+    //простой стиль ссылок с подчеркиванием
     const linkStyle = ({ isActive }) => ({
         color: 'white',
         textDecoration: 'none',

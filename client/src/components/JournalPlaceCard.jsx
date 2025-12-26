@@ -27,7 +27,7 @@ const JournalPlaceCard = observer(({ entry, journalStore }) => {
     const handleSave = async (e) => {
     e.stopPropagation();
     
-    //Проверка 1: Дата не может быть в будущем
+    //Дата не может быть в будущем
     const today = new Date().toISOString().split('T')[0];
     if (visitedDate > today) {
         return alert("Дата посещения не может быть выбрана будущим числом");

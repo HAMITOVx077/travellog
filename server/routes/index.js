@@ -1,14 +1,14 @@
 const Router = require('express');
 const router = new Router();
 
-//импорт роутеров
+//импорт дочерних роутеров для разных сущностей
 const authRouter = require('./authRouter');
 const placeRouter = require('./placeRouter'); 
 const journalRouter = require('./journalRouter');
 
-//регистрация роутов:
-router.use('/auth', authRouter); 
-router.use('/places', placeRouter); // /api/places
-router.use('/journal', journalRouter); // /api/journal
+//связываем префикс адреса с конкретным роутером
+router.use('/auth', authRouter);
+router.use('/places', placeRouter);
+router.use('/journal', journalRouter);
 
 module.exports = router;

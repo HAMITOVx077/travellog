@@ -15,10 +15,10 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// МАРШРУТЫ
+//мАРШРУТЫ
 router.get('/', placeController.getAll);
 router.post('/', authMiddleware, checkRole('admin'), upload.single('image'), placeController.createPlace);
-// Добавлен роут для обновления:
+//добавлен роут для обновления
 router.put('/:id', authMiddleware, checkRole('admin'), upload.single('image'), placeController.updatePlace);
 router.delete('/:id', authMiddleware, checkRole('admin'), placeController.deletePlace);
 

@@ -7,7 +7,7 @@ module.exports = function (req, res, next) {
     }
 
     try {
-        // Добавлена проверка на наличие заголовка, чтобы избежать ошибки split
+        //добавлена проверка на наличие заголовка
         const authHeader = req.headers.authorization;
         if (!authHeader) {
             return res.status(401).json({ message: "Не авторизован. Заголовок отсутствует." });
@@ -18,10 +18,10 @@ module.exports = function (req, res, next) {
             return res.status(401).json({ message: "Не авторизован. Токен отсутствует." });
         }
 
-        // Верификация токена
+        //верификация токена
         const decoded = jwt.verify(token, process.env.SECRET_KEY);
         
-        // Теперь req.user содержит { id, email, role, username }
+        //теперь req.user содержит { id, email, role, username }
         req.user = decoded; 
         
         next(); 

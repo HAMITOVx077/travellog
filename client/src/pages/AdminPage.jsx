@@ -39,7 +39,7 @@ const AdminPage = observer(() => {
 
     return (
         <div style={{ maxWidth: '600px', margin: '40px auto', padding: '0 20px' }}>
-            {/* ЗАГОЛОВОК ИЗМЕНЕН НА "Добавить место" И ЦВЕТ НА КРАСНЫЙ */}
+            {/* изменен заголовок и цвет */}
             <h1 style={{ color: '#8B2E2E', marginBottom: '30px' }}>Добавить место</h1>
             
             <section style={{ backgroundColor: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(139, 46, 46, 0.1)', border: '1px solid #F4D0D0' }}>

@@ -26,6 +26,7 @@ class JournalStore {
         };
     }
 
+    //получить весь список из БД
     async fetchJournal() {
         this.setLoading(true);
         try {
@@ -39,6 +40,7 @@ class JournalStore {
         }
     }
 
+    //добавить место в список "Хочу посетить"
     async addPlace(placeId) {
         try {
             const response = await $api.post('/journal', { placeId });
@@ -54,6 +56,7 @@ class JournalStore {
         }
     }
     
+    //удаление места из журнала
     async removePlace(id) {
         try {
             await $api.delete(`/journal/${id}`); 
@@ -64,7 +67,7 @@ class JournalStore {
         }
     }
 
-    //в метод добавлена передача visited_date
+    //изменить статус
     async updateStatus(journalEntryId, { status, rating, user_review, visited_date }) {
         try {
             const response = await $api.put(`/journal/${journalEntryId}`, { 

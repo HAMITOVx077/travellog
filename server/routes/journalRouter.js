@@ -7,7 +7,7 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.get('/', authMiddleware, placeController.getUserJournal); 
 //добавить место
 router.post('/', authMiddleware, placeController.addUserPlace);
-//ОБНОВЛЕНО: Добавлен :id для маршрута PUT
+//обновить статус
 router.put('/:id', authMiddleware, placeController.updateStatus);
 //удалить из журнала
 router.delete('/:id', authMiddleware, placeController.removeUserPlace); 

@@ -17,6 +17,7 @@ class PlaceStore {
         this.isLoading = bool;
     }
 
+    //загрузить каталог с сервера
     async fetchPlaces() {
         if (this.places.length > 0) return;
         this.setLoading(true);
@@ -31,14 +32,15 @@ class PlaceStore {
         }
     }
 
+    //создать новое место
     async createPlace(formData) {
         try {
-            // Извлекаем данные из FormData для проверки на дубликаты
+            //извлекаем данные из FormData для проверки на дубликаты
             const name = formData.get('name').toLowerCase().trim();
             const city = formData.get('city').toLowerCase().trim();
             const country = formData.get('country').toLowerCase().trim();
 
-            // ПРОВЕРКА: Если все три поля совпадают
+            //если все три поля совпадают
             const isDuplicate = this.places.some(p => 
                 p.name.toLowerCase().trim() === name &&
                 p.city.toLowerCase().trim() === city &&
@@ -50,8 +52,6 @@ class PlaceStore {
                 return false;
             }
 
-            // Если картинки нет, бэкенд поймет это по отсутствию файла, 
-            // но мы можем явно передать имя дефолтного файла, если бэкенд это поддерживает
             if (!formData.has('image')) {
                 formData.append('image_url', 'default-place.webp');
             }
@@ -70,6 +70,7 @@ class PlaceStore {
         }
     }
 
+    //удаление места
     async deletePlace(id) {
         try {
             await $api.delete(`/places/${id}`);
@@ -83,6 +84,7 @@ class PlaceStore {
         }
     }
 
+    //обновление места
     async updatePlace(id, formData) {
         try {
             const response = await $api.put(`/places/${id}`, formData);

@@ -16,7 +16,7 @@ module.exports = function (requiredRole) {
                 return res.status(401).json({ message: "Не авторизован." });
             }
 
-            //декодируем токен (мы делаем это здесь, чтобы получить роль)
+            //декодируем токен, делаем это здесь, чтобы получить роль
             const decoded = jwt.verify(token, process.env.SECRET_KEY);
             
             //проверяем, совпадает ли роль пользователя с требуемой

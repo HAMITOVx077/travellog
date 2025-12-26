@@ -13,7 +13,7 @@ const ProfilePage = observer(() => {
         email: authStore.user?.email || ''
     });
     
-    const [errors, setErrors] = useState({}); // Состояние для ошибок
+    const [errors, setErrors] = useState({}); //состояние для ошибок
     const [avatarFile, setAvatarFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -24,7 +24,7 @@ const ProfilePage = observer(() => {
     const visitedPlaces = journalStore.journalPlaces.filter(p => p.status === 'visited').length;
     const wantToVisit = journalStore.journalPlaces.filter(p => p.status === 'want_to_visit').length;
 
-    // Валидация аналогичная LoginPage
+    //валидация аналогичная LoginPage
     const validate = () => {
         const newErrors = {};
         const allowedDomains = ['@gmail.com', '@mail.ru', '@yandex.ru', '@bk.ru', '@list.ru'];
@@ -52,7 +52,7 @@ const ProfilePage = observer(() => {
     };
 
     const handleSave = async () => {
-        if (!validate()) return; // Проверка перед сохранением
+        if (!validate()) return; //проверка перед сохранением
 
         try {
             const success = await authStore.updateProfile(editData, avatarFile);
@@ -61,7 +61,6 @@ const ProfilePage = observer(() => {
                 setAvatarFile(null);
                 setPreviewUrl(null);
                 setErrors({});
-                // Убрали alert, так как успех виден по смене интерфейса
             }
         } catch (err) {
             setErrors({ global: 'Ошибка при обновлении профиля' });

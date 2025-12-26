@@ -19,7 +19,7 @@ const CatalogPage = observer(() => {
         return <div style={{ textAlign: 'center', marginTop: '100px', color: '#1C454B', fontWeight: 'bold' }}>Загрузка каталога...</div>;
     }
 
-    //ЛОГИКА ФИЛЬТРАЦИИ
+    //логика фильтрации
     const filteredPlaces = placeStore.places.filter(place => {
         const query = searchQuery.toLowerCase().trim();
         const matchesSearch = place.name.toLowerCase().includes(query) || 
@@ -37,7 +37,7 @@ const CatalogPage = observer(() => {
         return matchesSearch && matchesStatus;
     });
 
-    //ЛОГИКА СОРТИРОВКИ
+    //логика сортировки
     const sortedPlaces = [...filteredPlaces].sort((a, b) => {
         if (sortBy === 'latest') {
             //Сортировка по ID или дате (последние сверху)
@@ -132,14 +132,14 @@ const toolbarStyle = {
 };
 
 const counterBadgeStyle = {
-    backgroundColor: '#f0f0f0', // Светло-серый фон
-    color: '#1C454B',           // Цвет текста (темно-зеленый)
+    backgroundColor: '#f0f0f0',
+    color: '#1C454B',
     padding: '12px 20px',
     borderRadius: '12px',
     fontSize: '14px',
     whiteSpace: 'nowrap',
-    border: '1px solid #e0e0e0', // Тонкая граница для четкости
-    fontWeight: '500'            // Немного добавим веса тексту
+    border: '1px solid #e0e0e0',
+    fontWeight: '500'
 };
 
 const gridStyle = { 

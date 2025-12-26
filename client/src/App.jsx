@@ -14,9 +14,9 @@ import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import AboutPage from './pages/AboutPage'; 
 import NavBar from './components/NavBar';
-import Footer from './components/Footer'; //импортируем футер
+import Footer from './components/Footer';
 
-
+//создание контекста для доступа к сторам из любого места приложения
 export const StoreContext = createContext({
     authStore: AuthStore,
     placeStore: PlaceStore,
@@ -48,7 +48,7 @@ const App = observer(() => {
 
     return (
         <BrowserRouter>
-            {/* 2. Добавляем стили Flexbox, чтобы футер "прилипал" к низу */}
+            {/* Добавляем стили Flexbox, чтобы футер был к низу */}
             <div className="App" style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -56,14 +56,15 @@ const App = observer(() => {
                 fontFamily: 'sans-serif', 
                 backgroundColor: '#f4f7f6' 
             }}>
-                <NavBar />
+                <NavBar /> {/* Навигация видна на всех страницах */}
 
-                {/* 3. Добавляем flex: 1 для main */}
                 <main style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto', width: '100%', flex: 1 }}>
                     <Routes>
+                        {/* публичные роуты доступны всем */}
                         <Route path="/" element={<CatalogPage />} /> 
                         <Route path="/about" element={<AboutPage />} />
 
+                        {/* защищенные роуты только для авторизованных */}
                         <Route 
                             path="/journal" 
                             element={authStore.isAuth ? <JournalPage /> : <Navigate to="/login" replace />} 
@@ -73,6 +74,7 @@ const App = observer(() => {
                             element={authStore.isAuth ? <ProfilePage /> : <Navigate to="/login" replace />} 
                         />
 
+                        {/* админ роут */}
                         <Route 
                             path="/admin" 
                             element={
@@ -82,6 +84,7 @@ const App = observer(() => {
                             } 
                         />
 
+                        {/* роуты авторизации, если юзер уже вошел, его перекинет на главную */}
                         <Route 
                             path="/login" 
                             element={!authStore.isAuth ? <LoginPage /> : <Navigate to="/" replace />} 
@@ -91,11 +94,11 @@ const App = observer(() => {
                             element={!authStore.isAuth ? <RegistrationPage /> : <Navigate to="/" replace />} 
                         />
 
+                        {/* 404: если адрес не совпал ни с одним выше */}
                         <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '50px' }}><h1>404</h1><p>Страница не найдена</p></div>} />
                     </Routes>
                 </main>
 
-                {/* 4. Рендерим футер */}
                 <Footer />
             </div>
         </BrowserRouter>

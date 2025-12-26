@@ -6,14 +6,14 @@ const { body } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 
-// Настройка хранилища для Multer
+//настройка хранилища для Multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'static/'),
     filename: (req, file, cb) => cb(null, Date.now() + path.extname(file.originalname))
 });
 const upload = multer({ storage });
 
-// Общая логика проверки доменов (вынесена для удобства)
+//общая логика проверки доменов
 const domainCheck = (value) => {
     const allowedDomains = ['@gmail.com', '@mail.ru', '@yandex.ru', '@bk.ru', '@list.ru'];
     if (!allowedDomains.some(domain => value.endsWith(domain))) {
@@ -22,7 +22,7 @@ const domainCheck = (value) => {
     return true;
 };
 
-// Правила валидации для РЕГИСТРАЦИИ
+//правила валидации для регистрации
 const registrationValidation = [
     body('email')
         .isEmail().withMessage('Некорректный формат почты')
@@ -34,7 +34,7 @@ const registrationValidation = [
         .isLength({ min: 3 }).withMessage('Никнейм должен быть не менее 3 символов')
 ];
 
-// Правила валидации для ОБНОВЛЕНИЯ (используем .optional())
+//правила валидации при обновлении профиля
 const updateValidation = [
     body('email')
         .optional({ checkFalsy: true })
@@ -48,17 +48,17 @@ const updateValidation = [
 
 //роуты
 
-// Регистрация
+//регистрация
 router.post('/registration', registrationValidation, userController.registration);
 
-// Логин
+//логин
 router.post('/login', userController.login);
 
-// Проверка авторизации (AuthMiddleware вытаскивает данные из токена)
+//проверка авторизации (AuthMiddleware вытаскивает данные из токена)
 router.get('/check', authMiddleware, userController.check);
 
-// Обновление профиля (PATCH)
-// Порядок важен: сначала Middleware авторизации, затем загрузка фото, затем валидация полей
+//обновление профиля
+//сначала Middleware авторизации, затем загрузка фото, затем валидация полей
 router.patch(
     '/update-profile', 
     authMiddleware, 

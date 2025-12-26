@@ -9,7 +9,7 @@ const Footer = () => {
             backgroundColor: '#1C454B',
             color: 'white',
             padding: '40px 20px 20px',
-            marginTop: 'auto', // Чтобы футер прижимался к низу
+            marginTop: 'auto', //чтобы футер прижимался к низу
         }}>
             <div style={{
                 maxWidth: '1200px',

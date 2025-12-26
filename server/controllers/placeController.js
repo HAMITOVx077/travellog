@@ -95,6 +95,32 @@ class PlaceController {
         res.status(500).json({ message: e.message });
     }
 }
+async updatePlace(req, res, next) {
+        try {
+            const { id } = req.params;
+            const { name, description, country, city } = req.body;
+            
+            const place = await Place.findByPk(id);
+            if (!place) {
+                return res.status(404).json({ message: 'Место не найдено' });
+            }
+
+            // Если загружено новое фото, берем его, иначе оставляем старое
+            const fileName = req.file ? req.file.filename : place.image_url;
+
+            await place.update({
+                name: name || place.name,
+                description: description || place.description,
+                country: country || place.country,
+                city: city || place.city,
+                image_url: fileName
+            });
+
+            return res.json(place);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 module.exports = new PlaceController();

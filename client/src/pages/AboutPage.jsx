@@ -38,10 +38,6 @@ const AboutPage = () => {
                     </p>
                 </div>
             </section>
-
-            <footer style={{ marginTop: '20px', textAlign: 'center', color: '#aaa', fontSize: '13px' }}>
-                © 2025 Курсовой проект
-            </footer>
         </div>
     );
 };

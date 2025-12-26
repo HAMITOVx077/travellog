@@ -25,18 +25,24 @@ const JournalPlaceCard = observer(({ entry, journalStore }) => {
     };
 
     const handleSave = async (e) => {
-        e.stopPropagation();
-        //если дата не выбрана, можно либо оставить null, либо текущую
-        const finalDate = visitedDate || new Date().toISOString().split('T')[0];
-        
-        const success = await journalStore.updateStatus(entry.id, {
-            status: 'visited',
-            rating: Number(rating),
-            user_review: review,
-            visited_date: finalDate 
-        });
-        if (success) setIsEditing(false);
-    };
+    e.stopPropagation();
+    
+    //Проверка 1: Дата не может быть в будущем
+    const today = new Date().toISOString().split('T')[0];
+    if (visitedDate > today) {
+        return alert("Дата посещения не может быть выбрана будущим числом");
+    }
+
+    const finalDate = visitedDate || today;
+    
+    const success = await journalStore.updateStatus(entry.id, {
+        status: 'visited',
+        rating: Number(rating),
+        user_review: review,
+        visited_date: finalDate 
+    });
+    if (success) setIsEditing(false);
+};
 
     return (
         <>

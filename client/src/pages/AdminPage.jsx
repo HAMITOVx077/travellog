@@ -15,13 +15,17 @@ const AdminPage = observer(() => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
         const data = new FormData();
         data.append('name', formData.name);
         data.append('city', formData.city);
         data.append('country', formData.country);
         data.append('description', formData.description);
+        
         if (file) {
             data.append('image', file);
+        } else {
+            data.append('image_url', 'default-place.webp'); 
         }
 
         const success = await placeStore.createPlace(data);
@@ -35,12 +39,11 @@ const AdminPage = observer(() => {
 
     return (
         <div style={{ maxWidth: '600px', margin: '40px auto', padding: '0 20px' }}>
-            {/* Убрал смайлик и добавил отступ снизу */}
-            <h1 style={{ color: '#1C454B', marginBottom: '30px' }}>Панель администратора</h1>
+            {/* ЗАГОЛОВОК ИЗМЕНЕН НА "Добавить место" И ЦВЕТ НА КРАСНЫЙ */}
+            <h1 style={{ color: '#8B2E2E', marginBottom: '30px' }}>Добавить место</h1>
             
-            <section style={{ backgroundColor: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>
-                {/* Упростил надпись */}
-                <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#333' }}>Добавить новое место</h3>
+            <section style={{ backgroundColor: 'white', padding: '25px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(139, 46, 46, 0.1)', border: '1px solid #F4D0D0' }}>
+                <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#333' }}>Новая локация в базе</h3>
                 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <input 
@@ -57,8 +60,8 @@ const AdminPage = observer(() => {
                     
                     <textarea placeholder="Описание" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} style={{...inputStyle, height: '80px', resize: 'none'}} />
 
-                    <div style={{ border: '1px dashed #ccc', padding: '10px', borderRadius: '6px' }}>
-                        <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', color: '#666' }}>Загрузить фото места:</label>
+                    <div style={{ border: '1px dashed #F4D0D0', padding: '15px', borderRadius: '8px', backgroundColor: '#FFF5F5' }}>
+                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', color: '#8B2E2E', fontWeight: 'bold' }}>Фотография места:</label>
                         <input 
                             type="file" 
                             accept="image/*" 
@@ -72,7 +75,7 @@ const AdminPage = observer(() => {
 
             <style>{`
                 .admin-btn:hover {
-                    opacity: 0.9;
+                    background-color: #A33737 !important;
                     transform: translateY(-1px);
                 }
                 .admin-btn:active {
@@ -83,7 +86,7 @@ const AdminPage = observer(() => {
     );
 });
 
-const inputStyle = { padding: '12px', borderRadius: '6px', border: '1px solid #eee', backgroundColor: '#f9f9f9', fontSize: '14px' };
-const btnStyle = { padding: '14px', backgroundColor: '#1C454B', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s' };
+const inputStyle = { padding: '12px', borderRadius: '6px', border: '1px solid #F4D0D0', backgroundColor: '#fff', fontSize: '14px', outlineColor: '#8B2E2E' };
+const btnStyle = { padding: '14px', backgroundColor: '#8B2E2E', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold', transition: '0.2s' };
 
 export default AdminPage;

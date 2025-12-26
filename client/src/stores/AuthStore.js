@@ -67,7 +67,7 @@ class AuthStore {
         this.setUser({});
     }
     
-    //ПРОВЕРКА ТОКЕНА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ (САМЫЙ ВАЖНЫЙ МЕТОД)
+    //ПРОВЕРКА ТОКЕНА ПРИ ЗАГРУЗКЕ СТРАНИЦЫ 
     async checkAuth() {
         this.setLoading(true); //загрузка начинается
 
@@ -106,6 +106,30 @@ class AuthStore {
             this.setLoading(false); 
         }
     }
+    async updateProfile(userData, avatarFile) {
+    try {
+        const formData = new FormData();
+        formData.append('username', userData.username);
+        formData.append('email', userData.email);
+        if (avatarFile) {
+            formData.append('avatar', avatarFile);
+        }
+
+        const response = await $api.patch('/auth/update-profile', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        if (response.data.token) {
+            localStorage.setItem('token', response.data.token);
+            const decodedUser = jwtDecode(response.data.token);
+            this.setUser(decodedUser);
+            return true;
+        }
+    } catch (e) {
+        alert(e.response?.data?.message || 'Ошибка обновления');
+        return false;
+    }
+}
 }
 
 export default new AuthStore();

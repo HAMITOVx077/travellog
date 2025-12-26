@@ -1,10 +1,9 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import $api from "../api"; 
 
 class PlaceStore {
-    //состояние для хранения списка мест
     places = [];
-    isLoading = false; //состояние загрузки для каталога
+    isLoading = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -18,53 +17,84 @@ class PlaceStore {
         this.isLoading = bool;
     }
 
-    //получение всего списка мест из каталога
     async fetchPlaces() {
-        //мы делаем это с проверкой, чтобы избежать лишних загрузок
         if (this.places.length > 0) return;
-
         this.setLoading(true);
         try {
-            //Запрос к API: GET /api/places
             const response = await $api.get('/places');
-            //бэкенд возвращает список мест напрямую[cite: 194], поэтому используем response.data
             this.setPlaces(response.data); 
         } catch (e) {
             console.error('Ошибка при загрузке каталога:', e.response?.data?.message);
-            this.setPlaces([]); //очищаем список при ошибке
+            this.setPlaces([]);
         } finally {
             this.setLoading(false);
         }
     }
-        //внутри PlaceStore.js
+
     async createPlace(formData) {
         try {
-            //formData — это уже объект FormData из компонента
+            // Извлекаем данные из FormData для проверки на дубликаты
+            const name = formData.get('name').toLowerCase().trim();
+            const city = formData.get('city').toLowerCase().trim();
+            const country = formData.get('country').toLowerCase().trim();
+
+            // ПРОВЕРКА: Если все три поля совпадают
+            const isDuplicate = this.places.some(p => 
+                p.name.toLowerCase().trim() === name &&
+                p.city.toLowerCase().trim() === city &&
+                p.country.toLowerCase().trim() === country
+            );
+
+            if (isDuplicate) {
+                alert("Такое место в этом городе и стране уже существует!");
+                return false;
+            }
+
+            // Если картинки нет, бэкенд поймет это по отсутствию файла, 
+            // но мы можем явно передать имя дефолтного файла, если бэкенд это поддерживает
+            if (!formData.has('image')) {
+                formData.append('image_url', 'default-place.webp');
+            }
+
             const response = await $api.post('/places', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
-            this.places.push(response.data);
+
+            runInAction(() => {
+                this.places.push(response.data);
+            });
             return true;
         } catch (e) {
-            console.error("Ошибка при создании места:", e);
+            alert(e.response?.data?.message || "Ошибка при создании места");
             return false;
         }
     }
-    // Внутри класса PlaceStore в файле PlaceStore.js
-async deletePlace(id) {
-    try {
-        await $api.delete(`/places/${id}`);
-        // Фильтруем массив, удаляя удаленный объект
-        this.places = this.places.filter(p => p.id !== id);
-        return true;
-    } catch (e) {
-        console.error("Ошибка при удалении места:", e);
-        alert(e.response?.data?.message || "Ошибка при удалении");
-        return false;
+
+    async deletePlace(id) {
+        try {
+            await $api.delete(`/places/${id}`);
+            runInAction(() => {
+                this.places = this.places.filter(p => p.id !== id);
+            });
+            return true;
+        } catch (e) {
+            alert("Ошибка при удалении");
+            return false;
+        }
     }
-}
+
+    async updatePlace(id, formData) {
+        try {
+            const response = await $api.put(`/places/${id}`, formData);
+            runInAction(() => {
+                this.places = this.places.map(p => p.id === id ? response.data : p);
+            });
+            return true;
+        } catch (e) {
+            alert("Ошибка при обновлении");
+            return false;
+        }
+    }
 }
 
 export default new PlaceStore();
